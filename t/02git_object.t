@@ -169,7 +169,10 @@ is($patch->{dst}, '5716ca5987cbf97d6bb54920bea6adde242d87e6', 'patch->{dst} is c
 
 {
     my $contents = do { local $/; my $fh = $commit_obj->get_patch; <$fh> };
-ok(index($contents,
+    note explain $contents;
+    #my $i = 0;
+    #do { note "differ at line
+    my $expected =
 'From 3f7567c7bdf7e7ebf410926493b92d398333116e Mon Sep 17 00:00:00 2001
 From: Florian Ragwitz <rafl@debian.org>
 Date: Tue, 6 Mar 2007 20:39:45 +0100
@@ -186,8 +189,18 @@ index 257cc56..5716ca5 100644
 @@ -1 +1 @@
 -foo
 +bar
---') == 0, 'commit_obj->get_patch can return a patch')
-    or warn("Got instead: $contents");
+--';
+
+    is(index($contents, $expected), 0, 'commit_obj->get_patch can return a patch')
+    #is($contents, $expected, 'commit_obj->get_patch can return a patch')
+    #like($contents, qr/^$expected/, 'commit_obj->get_patch can return a patch')
+    #or warn("Got instead: $contents");
+    ;
+
+    my @got      = split /\n/, $contents;
+    my @expected = split /\n/, $expected;
+
+    is_deeply([ @got ], [ @expected ], 'line compare');
 }
 
 # Note - 2 patches = 3 parts due to where we split.
